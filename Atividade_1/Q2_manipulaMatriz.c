@@ -2,213 +2,172 @@
 #include <stdlib.h>
 #include <math.h>
 
-int **aloca_matriz(int l, int c);
-void preenche_matriz(int** aux, int l, int c);
-void imprime_matriz(int** aux, int l, int c);
-void multiplica_matriz(int** aux1, int** aux2, int** aux3, int l1, int l2, int c1, int c2);
-void transposta_matriz(int **aux, int l, int c);
-void diagonal_principal_matriz(int** aux, int l, int c);
-void teto_matriz(int** aux, int l, int c);
-void piso_matriz(int** aux, int l, int c);
+int** alocar_matriz(int, int);
+void preencher_matriz(int**, int, int);
+void mostrar(int**, int, int);
+int** multiplicar_matriz(int**, int**, int, int, int, int);
+int** transposta(int**, int, int);
+void diagonal(int**, int, int);
+void imprimir_linha(int**, int, int);
+void imprimir_coluna(int**, int, int);
 
+int main(void) {
+	unsigned int l1, c1, l2, c2;
 
-int **aloca_matriz(int l, int c)
-{
-    int i, **aux;
-    aux = (int**)malloc(l*sizeof(int*));
-    if(aux != NULL)
-    {
-        for(i=0; i<l; i++)
-        {
-            aux[i] = (int*)malloc(c*sizeof(int));
-        }
-    }
+	printf("Entre com o numero de linhas: ");
+	scanf("%d", &l1);
 
-    return aux;
+	printf("Entre com o numero de colunas: ");
+	scanf("%d", &c1);
+
+	int** matrizA;
+
+	matrizA = alocar_matriz(l1, c1);
+
+	preencher_matriz(matrizA, l1, c1);
+
+	printf("Entre com o numero de linhas: ");
+	scanf("%d", &l2);
+
+	printf("Entre com o numero de colunas: ");
+	scanf("%d", &c2);
+
+	int** matrizB;
+
+	matrizB = alocar_matriz(l2, c2);
+
+	preencher_matriz(matrizB, l2, c2);
+
+    puts("\n\nMatriz produto");
+	mostrar(multiplicar_matriz(matrizA, matrizB, l1, c1, l2, c2), l1, c2);
+	puts("\n\nMatriz B transposta");
+	mostrar(transposta(matrizB, l2, c2), c2, l2);
+	puts("\n\nDiagonal principal da matriz A");
+	diagonal(matrizA, l1, c1);
+	puts("\n\nTeto linha");
+	imprimir_linha(matrizA, l1, c1);
+	puts("\n\nPiso coluna");
+	imprimir_coluna(matrizB, l2, c2);
+
+	return 0;
 }
 
-void preenche_matriz(int** aux, int l, int c)
-{
-    int i, j;
+int** alocar_matriz(int linha, int coluna) {
+	int** matriz;
 
-    if(aux != NULL)
-    {
-        for(i=0; i<l; i++)
-        {
-            for(j=0; j<c; j++)
-            {
-                if(aux[i] != NULL)
-                {
-                    printf("[%d][%d] -> ", i+1, i+j);
-                    scanf("%d", &aux[i][j]);
-                }
-            }
-        }
-    }
+	matriz = (int**)malloc(linha * sizeof(int*));
+
+	unsigned int i;
+
+	for(i = 0; i < linha; i ++) {
+		matriz[i] = (int*)malloc(coluna * sizeof(int));
+	}
+
+	return matriz;
 }
 
-void imprime_matriz(int** aux, int l, int c)
-{
-    int i, j;
+void preencher_matriz(int** matriz, int linha, int coluna) {
+	unsigned int i, j;
 
-    for(i=0; i<l; i++)
-    {
-        for(j=0; j<c; j++)
-        {
-            printf("\t%d", aux[i][j]);
-        }
-        printf("\n");
-    }
-
-    printf("\n");
-
+	for(i = 0; i < linha; i ++) {
+		for(j = 0; j < coluna; j ++) {
+            printf("Entre com o valor da posicao [%d][%d]", i, j);
+			scanf("%d", &matriz[i][j]);
+		}
+	}
 }
 
-void multiplica_matriz(int** aux1, int** aux2, int** aux3, int l1, int l2, int c1, int c2)
-{
-    int i, j, k;
+void mostrar(int** matriz, int linha, int coluna) {
+	unsigned int i, j;
 
-    if(c1 == l2)
-    {
-        for(i=0; i<l1; i++)
-        {
-            for(j=0; j<c2; j++)
-            {
-                for(k=0; k<l2; k++)
-                {
-                    aux3[i][j] += aux1[i][k]*aux2[k][j];
-                }
-            }
-        }
-    }
+	for(i = 0; i < linha; i ++) {
+		for(j = 0; j < coluna; j ++) {
+			printf("%d\t", matriz[i][j]);
+		}
+		printf("\n");
+	}
 }
 
-void transposta_matriz(int **aux, int l, int c)
-{
-    int i, j;
+int** multiplicar_matriz(int** matrizA, int** matrizB, int l1, int c1, int l2, int c2) {
+	if(c1 == l2) {
+		int** matrizC;
 
-    printf("----- Transposta da Matriz B -----\n");
-    for(i=0; i<c; i++)
-    {
-        for(j=0; j<l; j++)
-        {
-            printf(" %d", aux[j][i]);
-        }
-        printf("\n");
-    }
+		matrizC = alocar_matriz(l1, c2);
+
+		unsigned int i, j, k;
+
+		for(i = 0; i < l1; i ++) {
+			for(j = 0; j < c2; j ++) {
+				matrizC[i][j] = 0;
+
+				for(k = 0; k < l2; k ++) {
+					matrizC[i][j] += matrizA[i][k] * matrizB[k][j];
+				}
+			}
+		}
+
+		return matrizC;
+	}
+
+	return NULL;
 }
 
-void diagonal_principal_matriz(int** aux, int l, int c)
-{
-    int i, j;
+int** transposta(int** matriz, int l, int c) {
+	int** tmp;
 
-    printf("----- Elementos da Diagonal Principal da Matriz A ------\n");
-    for(i=0; i<l; i++)
-    {
-        for(j=0; j<c; j++)
-        {
-            if(i == j)
-            {
-                printf("\t%d", aux[i][j]);
-            }
-            else
-            {
-                printf("\t ");
-            }
-        }
-        printf("\n");
-    }
+	tmp = alocar_matriz(c, l);
+
+	unsigned int i, j;
+
+	for(i = 0; i < c; i ++) {
+		for(j = 0; j < l; j++) {
+			tmp[i][j] = matriz[j][i];
+		}
+	}
+
+	return tmp;
 }
 
-void teto_matriz(int** aux, int l, int c)
-{
-    int i, j, x;
+void diagonal(int** matriz, int num_linhas, int num_colunas) {
+	unsigned int i, j;
 
-    x = l;
-    x = ceil(x/2);
-
-    printf("----- Elementos da Linha ceil(n/2) da Matriz A ------\n");
-    for(i=0; i<l; i++)
-    {
-        for(j=0; j<c; j++)
-        {
-            if((i+1) == x)
-            {
-                printf(" %d", aux[i][j]);
-            }
-        }
-        printf("\n");
-    }
+	for(i = 0; i < num_linhas; i ++) {
+		for(j = 0; j < num_colunas; j ++) {
+			if(i == j) {
+				printf("%d ", matriz[i][j]);
+			}
+		}
+	}
 }
 
-void piso_matriz(int** aux, int l, int c)
-{
-    int i, j, y;
+void imprimir_linha(int** matriz, int num_linhas, int num_colunas) {
+	float x;
 
-    y = c;
-    y = floor(y/2);
+	x = num_linhas;
+	x = ceil(x/2);
 
-    printf("----- Elementos da Coluna floor(f/2) da Matriz B ------\n");
-    for(i=0; i<l; i++)
-    {
-        for(j=0; j<c; j++)
-        {
-            if((j+1) == y)
-            {
-                printf(" %d", aux[i][j]);
-            }
-        }
-        printf("\n");
-    }
+	unsigned int i, j;
+
+    for(i = 0; i < num_linhas; i ++) {
+		for(j = 0; j < num_colunas; j ++) {
+		    if((i + 1) == x) {
+		        printf("%d ", matriz[i][j]);
+		    }
+		}
+	}
 }
 
+void imprimir_coluna(int** matriz, int num_linhas, int num_colunas) {
+	float y = num_colunas;
+        y = floor(y / 2);
 
-int main()
-{
-    int n, m, p, f, **a, **b, **c;
-
-    printf("Linha da matriz A: ");
-    scanf("%d", &n);
-    printf("Coluna da matriz A: ");
-    scanf("%d", &m);
-    printf("Linha da matriz B: ");
-    scanf("%d", &p);
-    printf("Coluna da matriz B: ");
-    scanf("%d", &f);
-
-    //Aloca e Preenche a matriz A
-    a = aloca_matriz(n, m);
-    preenche_matriz(a, n, m);
-
-    //Aloca e Preenche a matriz B
-    b = aloca_matriz(p, f);
-    preenche_matriz(b, p, f);
-
-    //Mostra as Matrizes A e B
-    imprime_matriz(a, n, m);
-    imprime_matriz(b, p, f);
-
-    //Aloca a Matriz C
-    c = aloca_matriz(n, f);
-
-    //Multiplicação das matrizes A e B
-    multiplica_matriz(a, b, c, n, p, m, f);
-
-    //Mostra a Matriz C
-    imprime_matriz(c, n, f);
-
-    //Imprime a Transposta da Matriz B
-    transposta_matriz(b, p, f);
-
-    //Imprime a Diagonal principal da Matriz A
-    diagonal_principal_matriz(a, n, m);
-
-    //Mostra a Linha da Matriz A de numero igual a função ceil(linha_da_matriz/2)
-    teto_matriz(a, n, m);
-
-    //Mostra a Coluna da Matriz B de numero igual a função floor(coluna_da_matriz/2)
-    piso_matriz(b, p, f);
-
-    return 0;
+        unsigned int i, j;
+        for(i = 0; i < num_linhas; i ++) {
+        	for(j = 0; j < num_colunas; j ++) {
+	            if((j + 1) == y) {
+	                printf("%d ", matriz[i][j]);
+	            }
+	        }
+        }
 }
 
