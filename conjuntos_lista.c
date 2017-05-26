@@ -29,9 +29,92 @@ LIST* unity(LIST *listA, LIST *listB);
 LIST* intersection(LIST *listA, LIST *listB);
 LIST* difference(LIST *listA, LIST *listB);
 LIST* complement(LIST *listA, LIST *listB);
+bool contained (LIST *listA, LIST *listB);
+
+void menu();
 
 void main()
 {
+    int i, tamA, tamB, num;
+    LIST *listA, *listB, *listC;
+
+
+    //ENTRADA DO TAMANHO DO VETOR A E CRIA플O DAO VETOR A
+    printf("Tamanho de elementos do conjunto A: ");
+    scanf("%d", &tamA);
+
+    //ENTRADA DO TAMANHO DO VETOR B E CRIA플O DO VETOR B
+    printf("Tamanho de elementos do conjunto B: ");
+    scanf("%d", &tamB);
+
+    //CRIA플O E INSER플O DE ELEMENTOS NA LISTA A
+    listA = create_list();
+    for(i=0; i<tamA; i++)
+    {
+        scanf("%d", &num);
+        insert_head(listA, (void*)&num);
+    }
+
+    //CRIA플O E INSER플O DE ELEMENTOS NA LISTA B
+    listB = create_list();
+    for(i=0; i<tamB; i++)
+    {
+        scanf("%d", &num);
+        insert_head(listA, (void*)&num);
+    }
+
+    listC = create_list();
+    system("cls");
+
+    printf("A = ");
+    print_list(listA);
+    printf("\nB = ");
+    print_list(listB);
+
+    int op;
+    menu();
+    switch (op)
+    {
+    case 1:
+        system("cls");
+        listC = unity(listA, listB);
+        print_list(listC);
+        break;
+    case 2:
+        system("cls");
+        listC = intersection(listA, listB);
+        print_list(listC);
+        break;
+    case 3:
+        system("cls");
+        listC = difference(listA, listB);
+        print_list(listC);
+        break;
+    case 4:
+        system("cls");
+        listC = complement(listA, listB);
+        print_list(listC);
+        break;
+    case 5:
+        system("cls");
+        if(contained(listA, listB)==true)
+        {
+            printf("\nConjunto A esta contido em B\n");
+        }else{
+            printf("\nConjunto A nao esta contido no conjunto B\n");
+        }
+        break;
+    case 6:
+        system("cls");
+        if(destroy_list(listA)== true && destroy_list(listB)== true && destroy_list(listC)== true)
+        {
+            printf("Todos os dados foram apagados");
+        }else{
+            printf("erro na destruicao dos dados");
+        }
+
+        break;
+    }
 
 }
 
@@ -50,6 +133,17 @@ bool destroy_list(LIST *list)
 {
     if(list!=NULL && list->head != NULL)
     {
+        NODE* node = (NODE*)malloc(sizeof(NODE));
+        NODE* node_prev = (NODE*)malloc(sizeof(NODE));
+        node = list->head;
+        node_prev = NULL;
+        while(list->head != NULL)
+        {
+            list->head = node->next;
+            node_prev = node;
+            node = node->next;
+            free(node_prev);
+        }
         free(list);
         return true;
     }
@@ -161,7 +255,7 @@ void print_list(LIST* list)
             node = list->head;
             while(node != NULL)
             {
-                printf("%d  ",(int*)node->number);
+                printf("%d\t",(int*)node->number);
                 node = node->next;
             }
         }else{
@@ -173,25 +267,216 @@ void print_list(LIST* list)
 
 LIST* unity(LIST *listA, LIST *listB)
 {
-    if(listA !=NULL && listB !=NULL)
+    if(listA !=NULL && listB !=NULL && listA->head != NULL && listB->head != NULL)
     {
         LIST* listC = (LIST*)malloc(sizeof(LIST));
         listC = create_list();
 
-        //insert_head(listC, number);
+        int xa, xb;
+        int x=0, flag =0;
+        NODE *n, *aux, *auxA, *auxB;
 
+        n = (NODE*)malloc(sizeof(NODE));
 
+        if(listC != NULL )
+        {
+            auxA = listA->head;
+            while(auxA != NULL)
+            {
+                xa = (int)auxA->number;
+                auxB = listB->head;
+                while(auxB!= NULL)
+                {
+                    xb = (int)auxB->number;
+                    if(xa == xb)
+                    {
+                        flag = 1;
+                        break;
+                    }
+                    auxB = auxB->next;
+
+                }
+                if(flag != 1)
+                    {
+                        insert_head(listC, auxA->number);
+                    }
+                auxA = auxA->next;
+                flag=0;
+            }
+            if(xa != xb)
+            {
+                insert_head(listC, auxA->number);
+            }
+            return listC;
+        }
     }
+    return NULL;
 }
 LIST* intersection(LIST *listA, LIST *listB)
 {
+    if(listA !=NULL && listB !=NULL && listA->head != NULL && listB->head != NULL)
+    {
+        LIST* listC = (LIST*)malloc(sizeof(LIST));
+        listC = create_list();
 
+        int xa, xb;
+        int x=0, flag =0;
+        NODE *n, *aux, *auxA, *auxB;
+
+        n = (NODE*)malloc(sizeof(NODE));
+
+        if(listC != NULL )
+        {
+            auxA = listA->head;
+            while(auxA != NULL)
+            {
+                xa = (int)auxA->number;
+                auxB = listB->head;
+                while(auxB!= NULL)
+                {
+                    xb = (int)auxB->number;
+                    if(xa == xb)
+                    {
+                        insert_head(listC, auxA->number);
+                        break;
+                    }
+                    auxB = auxB->next;
+
+                }
+                auxA = auxA->next;
+                flag=0;
+            }
+            if(xa == xb)
+            {
+                insert_head(listC, auxA->number);
+            }
+            return listC;
+        }
+    }
+    return NULL;
 }
 LIST* difference(LIST *listA, LIST *listB)
 {
+    if(listA !=NULL && listB !=NULL && listA->head != NULL && listB->head != NULL)
+    {
+        LIST* listC = (LIST*)malloc(sizeof(LIST));
+        listC = create_list();
 
+        int xa, xb;
+        int x=0, flag =0;
+        NODE *n, *aux, *auxA, *auxB;
+
+        n = (NODE*)malloc(sizeof(NODE));
+
+        if(listC != NULL )
+        {
+            auxA = listA->head;
+            while(auxA != NULL)
+            {
+                xa = (int)auxA->number;
+                auxB = listB->head;
+                while(auxB!= NULL)
+                {
+                    xb = (int)auxB->number;
+                    if(xa == xb)
+                    {
+                        flag = 1;
+                    }
+                    auxB = auxB->next;
+                }
+                if(flag != 1)
+                {
+                    insert_head(listC, auxA->number);
+                }
+                auxA = auxA->next;
+                flag=0;
+            }
+            return listC;
+        }
+    }
+    return NULL;
 }
 LIST* complement(LIST *listA, LIST *listB)
 {
+    if(listA !=NULL && listB !=NULL && listA->head != NULL && listB->head != NULL)
+    {
+        LIST* listC = (LIST*)malloc(sizeof(LIST));
+        listC = create_list();
 
+        int xa, xb;
+        int x=0, flag =0;
+        NODE *n, *aux, *auxA, *auxB;
+
+        n = (NODE*)malloc(sizeof(NODE));
+
+        if(listC != NULL )
+        {
+            auxA = listB->head;
+            while(auxA != NULL)
+            {
+                xa = (int)auxA->number;
+                auxB = listA->head;
+                while(auxB!= NULL)
+                {
+                    xb = (int)auxB->number;
+                    if(xa == xb)
+                    {
+                        flag = 1;
+                    }
+                    auxB = auxB->next;
+                }
+                if(flag != 1)
+                {
+                    insert_head(listC, auxA->number);
+                }
+                auxA = auxA->next;
+                flag=0;
+            }
+            return listC;
+        }
+    }
+    return NULL;
+}
+bool contained (LIST *listA, LIST *listB)
+{
+    if(listA !=NULL && listB !=NULL && listA->head != NULL && listB->head != NULL)
+    {
+        LIST* listC = (LIST*)malloc(sizeof(LIST));
+        listC = create_list();
+
+        int cont=0;
+        NODE *auxA;
+
+        auxA = (NODE*)malloc(sizeof(NODE));
+
+        if(listC != NULL )
+        {
+            auxA = listA->head;
+            while(auxA != NULL)
+            {
+                if(query_list(listB, auxA->number)==true)
+                {
+                    cont++;
+                }
+                auxA = auxA->next;
+            }
+            if(get_size_list(listA)==cont)
+            {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+void menu()
+{
+    printf("===== OPCOES =====\n");
+    printf("(1) - A U B\n");
+    printf("(2) - A n B\n");
+    printf("(3) - A - B\n");
+    printf("(4) - A \ B\n");
+    printf("(5) - A C B\n");
+    printf("(6) - Limpar todos os dados da memoria\n");
+    printf("==================\n");
 }
