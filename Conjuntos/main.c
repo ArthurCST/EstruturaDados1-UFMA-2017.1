@@ -85,10 +85,10 @@ int main(void) {
 
     if(contido(listaA, listaB)==1)
     {
-        printf("A C B: TRUE", );
+        printf("A C B: TRUE");
     }else
     {
-        printf("A C B: FALSE", );
+        printf("A C B: FALSE");
     }
 
 
